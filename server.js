@@ -30,8 +30,8 @@ app.use("/api/users", userRoutes)
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
 app.use(invalidPathHandler);
-// app.use(errorResponseHandler)
+app.use(errorResponseHandler)
 
-const port = 4000 || process.env.PORT
+const port = 5000 || process.env.PORT
 
 app.listen(port, () => { console.log(`Server listening at port - ${port}`) })
