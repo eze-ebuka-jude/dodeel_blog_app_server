@@ -6,6 +6,7 @@ import connectDB from './config/db.js'
 import { errorResponseHandler, invalidPathHandler } from './middleware/errorHandler.js'
 
 import userRoutes from './routes/userRoutes.js'
+import postRoutes from './routes/postRoutes.js'
 
 import { fileURLToPath } from 'url'
 
@@ -26,11 +27,12 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/users", userRoutes)
+app.use("/api/posts", postRoutes)
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
-app.use(invalidPathHandler);
-app.use(errorResponseHandler)
+// app.use(invalidPathHandler);
+// app.use(errorResponseHandler)
 
 const port = 5000 || process.env.PORT
 

@@ -42,9 +42,10 @@ export const loginUser = async function(req, res, next) {
         console.log(email, password)
         if(!user) throw new Error(`The Email ${email} was not found, try again..`)
 
-        const isMatch = await user.comparePassword(password)
+        const isMatch = password === user.password
+        console.log(isMatch)
         
-        if(!isMatch) {
+        if(isMatch) {
             return res.status(201).json({
                 _id: user._id,
                 avatar: user.avatar,
@@ -52,19 +53,24 @@ export const loginUser = async function(req, res, next) {
                 email: user.email,
                 password: user.password,
                 verified: user.verified,
+                admin: user.admin,
                 token: await user.generateJWT()
             })
         }else {
-            throw new Error("Invalid email or password")
+            let err = new Error("Invalid email or password")
+            next(err)
         }
     }catch(error) {
+        console.log(error)
         next(error)
     }
 }
 
 export const userProfile = async(req, res, next) => {
     try {
-        let user = await User.findById(req.user._id);
+        
+        let user = await User.findById(req.user._id)
+        console.log(user)
 
         if(user) {
             return res.status(201).json({
@@ -73,7 +79,8 @@ export const userProfile = async(req, res, next) => {
                 name: user.name,
                 email: user.email,
                 password: user.password,
-                verified: user.verified
+                verified: user.verified,
+                admin: user.admin
             })
         }else {
             let error = new Error("User not found");
@@ -87,7 +94,8 @@ export const userProfile = async(req, res, next) => {
 
 export const updateProfile = async(req, res, next) => {
     try {
-        let user = await User.findById(req.user._id)
+        const { email } = req.body
+        let user = await User.findOne({ email })
 
         if(!user) throw new Error("User not found")
 
@@ -108,6 +116,7 @@ export const updateProfile = async(req, res, next) => {
             email: updatedUserProfile.email,
             password: updatedUserProfile.password,
             verified: updatedUserProfile.verified,
+            admin: updatedUserProfile.admin,
             token: await updatedUserProfile.generateJWT()
         })
     } catch (error) {
@@ -139,6 +148,7 @@ export const updateUserProfilePicture = async(req, res, next) => {
                         email: updatedUser.email,
                         password: updatedUser.password,
                         verified: updatedUser.verified,
+                        admin: updatedUser.admin,
                         token: await updatedUser.generateJWT()
                     });
                 }else {
@@ -155,6 +165,7 @@ export const updateUserProfilePicture = async(req, res, next) => {
                         email: updatedUser.email,
                         password: updatedUser.password,
                         verified: updatedUser.verified,
+                        admin: updatedUser.admin,
                         token: await updatedUser.generateJWT()
                     });
                 }
