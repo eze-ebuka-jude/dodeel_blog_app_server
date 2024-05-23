@@ -57,8 +57,8 @@ export const loginUser = async function(req, res, next) {
                 token: await user.generateJWT()
             })
         }else {
-            let err = new Error("Invalid email or password")
-            next(err)
+            const error = new Error("Invalid email or password")
+            next(error)
         }
     }catch(error) {
         console.log(error)
@@ -135,10 +135,12 @@ export const updateUserProfilePicture = async(req, res, next) => {
             }else {
                 if(req.file) {
                     let filename;
-                    const updatedUser = await User.findById(req.user._id)
-                    filename = updatedUser.avatar
+                    const { name, avatar } = req.body
+                    const updatedUser = await User.findOne({ name })
+                    console.log(updatedUser)
+                    filename = avatar
                     if(filename) fileRemover(filename)
-                    updatedUser.avatar = req.file.filename
+                    avatar = req.file.filename
                     await updatedUser.save()
 
                     res.json({

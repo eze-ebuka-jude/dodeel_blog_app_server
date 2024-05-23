@@ -104,23 +104,24 @@ export const deletePost = async(req, res, next) => {
 
 export const getPost = async(req, res, next) => {
     try {
-        const post = await Post.findOne({ slug: req.params.slug }).populate([
-            { path: "user", select: ["avatar", "name"]},
-            // { 
-            //     path: "comments", 
-            //     match: { check: true, parent: null },
-            //     populate: [
-            //         { path: "user", select: [ "avatar", "name" ] },     //For the comment not post this time
-            //         { 
-            //             path: "replies", 
-            //             match: { check: true },
-            //             populate: [
-            //                 { path: "user", select: [ "avatar", "name" ] }
-            //             ]
-            //         }
-            //     ]
-            // },
-        ])
+        const post = await Post.findOne({ slug: req.params.slug })
+        // populate([
+        //     { path: "user", select: ["avatar", "name"]},
+        //     { 
+        //         path: "comments", 
+        //         match: { check: true, parent: null },
+        //         populate: [
+        //             { path: "user", select: [ "avatar", "name" ] },     //For the comment not post this time
+        //             { 
+        //                 path: "replies", 
+        //                 match: { check: true },
+        //                 populate: [
+        //                     { path: "user", select: [ "avatar", "name" ] }
+        //                 ]
+        //             }
+        //         ]
+        //     },
+        // ])
     
         if(!post) {
             const error = new Error("Post was not found");

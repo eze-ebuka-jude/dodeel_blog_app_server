@@ -12,6 +12,7 @@ const PostSchema = new Schema(
         mainPhoto: { type: String, required: true },
         supportPhoto: { type: String, required: true},
         category: { type: String, required: true },
+        user: { type: Schema.Types.ObjectId, ref: "User" },
         date: { type: Date, default: Date.now },
         likes: { type: Number, default: 0 }
     },

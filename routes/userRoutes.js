@@ -16,6 +16,6 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 router.get("/profile", authGuard, userProfile)
 router.put("/updateProfile", authGuard, updateProfile)
-router.put("/updateProfilePicture", authGuard, updateUserProfilePicture)
+router.put("/updateUserProfilePicture", authGuard, updateUserProfilePicture)
 
 export default router

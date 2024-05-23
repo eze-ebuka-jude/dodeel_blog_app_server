@@ -4,6 +4,7 @@ import User from "../models/User.js"
 const { verify } = ver
 
 const authGuard = async(err, req, res, next) => {
+    console.log(req.headers.authorization)
     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         console.log(req.headers.authorization)
         try {
