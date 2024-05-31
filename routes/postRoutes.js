@@ -7,7 +7,7 @@ import { authGuard, adminGuard } from "../middleware/authMiddleware.js"
 router.route("/").post(authGuard, createPost).get(getAllPost)
 router
     .route("/:slug")
-    .put(authGuard, adminGuard, updatePost)
+    .put(authGuard, updatePost)
     .delete(authGuard, deletePost)
     .get(getPost)
 

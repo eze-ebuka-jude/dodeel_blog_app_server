@@ -1,6 +1,7 @@
 import { uploadPicture } from "../middleware/uploadPicture.js";
 import User from "../models/User.js"
 import { fileRemover } from "../utils/fileRemover.js" 
+import mongoose from "mongoose";
 
 export const registerUser = async(req, res, next) => {
     try {
@@ -57,8 +58,7 @@ export const loginUser = async function(req, res, next) {
                 token: await user.generateJWT()
             })
         }else {
-            const error = new Error("Invalid email or password")
-            next(error)
+            throw new Error("Invalid email or password")
         }
     }catch(error) {
         console.log(error)
@@ -87,6 +87,16 @@ export const userProfile = async(req, res, next) => {
             error.statusCode = 404
             next(error)
         }
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const getUsers = async(req, res, next) => {
+    try {
+        
+        let users = await User.find()
+        res.status(200).json(users)
     } catch (error) {
         next(error)
     }
@@ -126,22 +136,25 @@ export const updateProfile = async(req, res, next) => {
 
 export const updateUserProfilePicture = async(req, res, next) => {
     try {
-        const upload = uploadPicture.single("profilePicture")
-        
+        const upload = uploadPicture.single("profilePicture");
+
         upload(req, res, async function(err) {
             if(err) {
-                const error = new Error("An unknown error ocurred when uploading " + err.message)
-                next(error)
+                const error = new Error("An unknown error ocurred when uploading " + err.message);
+                next(error);
             }else {
                 if(req.file) {
                     let filename;
-                    const { name, avatar } = req.body
-                    const updatedUser = await User.findOne({ name })
-                    console.log(updatedUser)
-                    filename = avatar
-                    if(filename) fileRemover(filename)
-                    avatar = req.file.filename
-                    await updatedUser.save()
+                    const { userId } = req.params;
+                    if (!mongoose.Types.ObjectId.isValid(userId)) {
+                        return res.status(400).json({ message: 'Invalid user ID' });
+                    }
+
+                    const updatedUser = await User.findById(userId);
+                    filename = updatedUser.avatar;
+                    if(filename) fileRemover(filename);
+                    updatedUser.avatar = req.file.filename;
+                    await updatedUser.save();
 
                     res.json({
                         _id: updatedUser._id,
@@ -155,7 +168,12 @@ export const updateUserProfilePicture = async(req, res, next) => {
                     });
                 }else {
                     let filename;
-                    let updatedUser = await User.findById(req.user._id);
+                    const { userId } = req.params;
+                    if (!mongoose.Types.ObjectId.isValid(userId)) {
+                      return res.status(400).json({ message: 'Invalid user ID' });
+                    }
+
+                    const updatedUser = await User.findById(userId);
                     filename = updatedUser.avatar;
                     updatedUser.avatar = "";
                     await updatedUser.save();

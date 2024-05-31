@@ -7,6 +7,7 @@ import { errorResponseHandler, invalidPathHandler } from './middleware/errorHand
 
 import userRoutes from './routes/userRoutes.js'
 import postRoutes from './routes/postRoutes.js'
+import contactRoutes from "./routes/contactRoutes.js"
 
 import { fileURLToPath } from 'url'
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRoutes)
 app.use("/api/posts", postRoutes)
+app.use("/api/contacts", contactRoutes)
 
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 

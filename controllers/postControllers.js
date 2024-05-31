@@ -43,43 +43,22 @@ export const updatePost = async(req, res, next) => {
             return
         }
 
-        const upload = uploadPicture.single("postPicture")
+        const { title, author, category, mainPhoto, supportPhoto, date, likes, introText, supportText, italicText, summaryText} = req.body
+        post.title = title || post.title
+        post.author = author || post.author
+        post.category = category || post.category
+        post.mainPhoto = mainPhoto || post.mainPhoto
+        post.supportPhoto = supportPhoto || post.supportPhoto
+        post.date = date || post.date
+        post.likes = likes || post.likes
+        post.introText = introText || post.introText
+        post.supportText = supportText || post.supportText
+        post.italicText = italicText || post.italicText
+        post.summaryText = summaryText || post.summaryText
 
-        const handleUpdatePostData = async(data) => {
-            const { title, author, category, mainPhoto, supportPhoto, date, likes, introText, supportText, italicText, summaryText} = JSON.parse(data)
-            post.title = title || post.title
-            post.author = author || post.author
-            post.category = category || post.category
-            post.mainPhoto = mainPhoto || post.mainPhoto
-            post.supportPhoto = supportPhoto || post.supportPhoto
-            post.date = date || post.date
-            post.likes = likes || post.likes
-            post.introText = introText || post.introText
-            post.supportText = supportText || post.supportText
-            post.italicText = italicText || post.italicText
-            post.summaryText = summaryText || post.summaryText
-            const updatedPost = await post.save()
-            return res.json(updatedPost)
-        }
-
-        upload(req, res, async function(err) {
-            if(err) {
-                const error = new Error("An unknown error occurred when uploading " + err.message)
-                next(error)
-            }else {
-                if(req.file) {
-                    let filename = post.photo
-                    if(filename) fileRemover(filename)
-                    post.photo = req.file.filename
-                    handleUpdatePostData(req.body.document)
-                }else {
-                    let filename = post.photo
-                    post.photo = ""
-                    fileRemover(filename)
-                }
-            }
-        })
-        
+        const updatedPost = await post.save()
+        return res.status(200).json(updatedPost)
+     
     } catch (error) {
       next(error)  
     }
@@ -136,9 +115,10 @@ export const getPost = async(req, res, next) => {
 
 export const getAllPost = async(req, res, next) => {
     try {
-        const filter = req.query.searchKeyboard
+        const { searchKeyword } = req.query
+        
         let where = {}
-        if(filter) where.title = { $regex: filter, $options: "i" }
+        if(searchKeyword) where.title = { $regex: searchKeyword, $options: "i" }
 
         let query = Post.find(where)
         const page = parseInt(req.query.page) || 1
@@ -152,12 +132,14 @@ export const getAllPost = async(req, res, next) => {
             return next(error)
         }
         
-        const result = await query.skip(skip).limit(pageSize).populate([
-            { path: "user", select: ["avatar", "name", "verified"]}
-        ]).sort({ updatedAt: "desc" })
+        // const result = await query.skip(skip).limit(pageSize).populate([
+        //     { path: "user", select: ["avatar", "name", "verified"]}
+        // ]).sort({ updatedAt: "desc" })
+
+        const result = await query.skip(skip).limit(pageSize).sort({ updatedAt: "desc" })
 
         res.header({
-            'x-filter': filter,
+            'x-filter': searchKeyword,
             'x-totalcount': JSON.stringify(total),
             'x-currentpage': JSON.stringify(page),
             'x-pagesize': JSON.stringify(pageSize),
