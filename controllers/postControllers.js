@@ -136,7 +136,8 @@ export const getAllPost = async(req, res, next) => {
         //     { path: "user", select: ["avatar", "name", "verified"]}
         // ]).sort({ updatedAt: "desc" })
 
-        const result = await query.skip(skip).limit(pageSize).sort({ updatedAt: "desc" })
+        const result = await query.skip(skip).limit(pageSize)
+        // const result = await query.skip(skip).limit(pageSize).sort({ createdAt: "desc" })
 
         res.header({
             'x-filter': searchKeyword,
@@ -145,9 +146,34 @@ export const getAllPost = async(req, res, next) => {
             'x-pagesize': JSON.stringify(pageSize),
             'x-totalpagecount': JSON.stringify(pages)
         })
-
+        // console.log(result)
         return res.json(result)
     } catch (error) {
         next(error)
     }
 }
+
+export const likePosts = async(req, res, next) => {
+    try {
+        const post = await Post.findOne({ slug: req.params.slug });
+        if (!post) {
+            const error = new Error("Post was not found");
+            return next(error);;
+        }
+    
+        post.likes += 1;
+        await post.save();
+        res.status(200).json({ message: 'Post liked', likes: post.likes });
+      } catch (error) {
+        next(error)
+    }
+}
+
+// export const rankedPosts = async(req, res, next) => {
+//     try {
+//         const posts = await Post.find().sort({ likes: -1})
+//         return res.status(200).json(posts);
+//     } catch (error) {
+//         next(error)
+//     }
+// }
