@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "npm install --prefix ../frontend && npm install build --prefix ../frontend && npm install",
     "prod": "NODE_ENV=production nodemon server.js"
   },
   "keywords": [],
