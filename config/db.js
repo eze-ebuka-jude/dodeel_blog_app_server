@@ -10,16 +10,16 @@ const connectDB = async() => {
     }
 }
 
-const closeConnection = async () => {
-    try {
-      await mongoose.connection.close();
-      console.log('MongoDB connection closed');
-    } catch (err) {
-      console.error('Error closing MongoDB connection:', err);
-    }
-  };
+// const closeConnection = async () => {
+//     try {
+//       await mongoose.connection.close();
+//       console.log('MongoDB connection closed');
+//     } catch (err) {
+//       console.error('Error closing MongoDB connection:', err);
+//     }
+//   };
   
-process.on('SIGINT', closeConnection);
-process.on('SIGTERM', closeConnection);
+// process.on('SIGINT', closeConnection);
+// process.on('SIGTERM', closeConnection);
 
 export default connectDB;
