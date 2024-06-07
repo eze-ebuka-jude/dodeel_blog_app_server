@@ -24,7 +24,7 @@ app.use(express.json({ limit: '150mb' }));
 app.use(express.urlencoded({ limit: '150mb', extended: true }));
 
 app.use(cors({
-    origin: 'https://dodeel-blog-app-client.onrender.com/'
+    origin: 'https://dodeel-blog-app-server.onrender.com/'
 }))
 
 app.get("/", (req, res) => {
