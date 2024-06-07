@@ -23,8 +23,22 @@ app.use(express.json({ limit: '150mb' }));
 
 app.use(express.urlencoded({ limit: '150mb', extended: true }));
 
+const allowedOrigins = [
+    'https://dodeel-blog-app-client.onrender.com/',
+    'http://localhost:3000'
+]
+
 app.use(cors({
-    origin: 'https://dodeel-blog-app-server.onrender.com/'
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+          const msg = 'The CORS policy for this site does not allow access from the specified origin.';
+          return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true
 }))
 
 app.get("/", (req, res) => {
